@@ -19,8 +19,7 @@ body {
 }
 
 .button {
- /* background-color: rgba(51, 51, 51, 0.05);*/
-  background-color: #ffffff;
+  background-color: #3333330d;
   border-radius: 6px;
   border-width: 0;
   color: #9098A9;
@@ -31,14 +30,25 @@ body {
   font-size: 20px;
   margin: 0;
   padding: 10px;
-  transition: all .3s;
-
+  transition: 1s ease;
   font-family: 'Cairo', sans-serif;
 }
 
-.button:focus {
+.button:active {
   background-color: #0077FF;
   color: #ffffff;
+}
+
+@keyframes buttonAin {
+  from {
+    background-color: #0077FF;
+    color: #ffffff;
+  }
+
+  to {
+    background-color: #3333330d;
+    color: #9098A9;
+  }
 }
 
 .add-item-box {
@@ -114,10 +124,6 @@ ul li {
   padding: 4px 0;
   position: relative;
   overflow: hidden;
-}
-
-ul li [clipped=true] {
-  background-color: #323333;
 }
 
 ul li button {

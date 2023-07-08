@@ -1,14 +1,15 @@
 const data = JSON.parse(localStorage.getItem('items'));
 const dataKey = +(localStorage.getItem('key'));
+const itemsRef = []
 let items = []
 let key;
 
-// Add item
+
 const inputItemRef = document.querySelector('.add-item-box .input');
-const buttonAddRef = document.querySelector('.add-item-box button')
+const buttonAddItemRef = document.querySelector('.add-item-box button')
 const listRef = document.querySelector('ul.list')
 
-const createAndAddItemRef = (value, count, key) => {
+const addItems = (value, count, key) => {
   const li = document.createElement('li');
   const buttonRemove = document.createElement('button');
   const item = document.createElement('span');
@@ -30,36 +31,21 @@ const createAndAddItemRef = (value, count, key) => {
 
   li.append(buttonPlus, buttonMinus, item, buttonRemove, counter);
 
-
   li.setAttribute('key', key)
 
   listRef.appendChild(li);
+  itemsRef.push(li);
 
 
-  // Remove item
-  const buttonRemoveRefS = li.querySelectorAll('ul li .remover')
-  buttonRemoveRefS.forEach(but => {
-    but.addEventListener('click', e => {
-      e.target.parentElement.remove();
-      const keyToRemove = e.target.parentElement.getAttribute('key');
-
-      items.forEach((item, i) => {
-        if (item.key == keyToRemove) {
-          items.splice(i, 1);
-        }
-      })
-
-
-      localStorage.setItem('items', JSON.stringify(items));
-    })
-  })
+  // Remove on item
+  removeOneItem()
 
   // Plus item
   const buttonPlusRefS = li.querySelectorAll('ul li .plus')
   buttonPlusRefS.forEach(but => {
     but.addEventListener('click', e => {
-      const keyToPlus = e.target.parentElement.getAttribute('key');
 
+      const keyToPlus = e.target.parentElement.getAttribute('key');
       items.forEach((item, i) => {
         if (item.key == keyToPlus && item.count < 999) {
           item.count += 1
@@ -67,6 +53,7 @@ const createAndAddItemRef = (value, count, key) => {
           localStorage.setItem('items', JSON.stringify(items));
         }
       })
+
     })
   })
 
@@ -114,7 +101,7 @@ if (data) {
   items.forEach(item => {
     const value = item.item;
     const { key, count } = item
-    createAndAddItemRef(value, count, key);
+    addItems(value, count, key);
   })
 
 } else {
@@ -124,7 +111,7 @@ if (data) {
 
 }
 
-buttonAddRef.addEventListener('click', _ => {
+buttonAddItemRef.addEventListener('click', _ => {
   const value = inputItemRef.value.trim();
   if (value != '') {
 
@@ -144,7 +131,7 @@ buttonAddRef.addEventListener('click', _ => {
       words.forEach(word => {
         if (word != '') {
           items.push({ key, item: word, count: 0 })
-          createAndAddItemRef(word, 0, key);
+          addItems(word, 0, key);
           key++;
           localStorage.setItem('key', key)
         }
@@ -154,7 +141,7 @@ buttonAddRef.addEventListener('click', _ => {
     } else {
       items.push({ key, item: value, count: 0 })
 
-      createAndAddItemRef(value, 0, key);
+      addItems(value, 0, key);
 
       key++;
       localStorage.setItem('key', key)
@@ -168,24 +155,22 @@ buttonAddRef.addEventListener('click', _ => {
 
 })
 
-/*
-inputItemRef.addEventListener('keyup', e => {
-  if (e.key == "Enter") {
-    const value = inputItemRef.value.trim();
-    if (value != '') {
+const removeOneItem = _ => {
+  itemsRef.forEach(li => {
+    const removeButRef = li.querySelectorAll('ul li .remover')
+    removeButRef.addEventListener('click', e => {
+      removeButRef.parentElement.remove();
+      const keyToRemove = removeButRef.parentElement.getAttribute('key');
 
-      items.push({ key, item: value, count: 0 })
+      items.forEach((item, i) => {
+        if (item.key == keyToRemove) {
+          items.splice(i, 1);
+        }
+      })
 
-      createAndAddItemRef(value, 0, key);
+      localStorage.setItem('items', JSON.stringify(items));
+    })
+  })
+}
 
-      key++;
-      localStorage.setItem('key', key)
-      localStorage.setItem('items', JSON.stringify(items))
 
-    }
-
-    inputItemRef.focus();
-    inputItemRef.value = '';
-  }
-})
-*/
