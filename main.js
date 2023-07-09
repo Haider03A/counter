@@ -1,118 +1,97 @@
+// Global
 const data = JSON.parse(localStorage.getItem('items'));
 const dataKey = +(localStorage.getItem('key'));
-const itemsRef = []
+
 let items = []
 let key;
 
+const itemsRef = []
 
-const inputItemRef = document.querySelector('.add-item-box .input');
-const buttonAddItemRef = document.querySelector('.add-item-box button')
-const listRef = document.querySelector('ul.list')
+const holdTouchDeily = 600;
 
-const addItems = (value, count, key) => {
+const updateDataInLocalStorage = _ => localStorage.setItem('items', JSON.stringify(items));
+
+const updateItemRefInLoops = _ => {
+  removeOneItem();
+  plusOnCounter();
+  plusOnCounterByInput();
+  minusOnCounter();
+  minusOnCounterByInput();
+}
+
+const itemsBoxRef = document.querySelector('ul.list');
+const itemInputRef = document.querySelector('.add-item-box .input');
+
+const createElemantList = (value, count, key) => {
   const li = document.createElement('li');
-  const buttonRemove = document.createElement('button');
+  const removeBut = document.createElement('button');
   const item = document.createElement('span');
-  const buttonPlus = document.createElement('button');
+  const plusBut = document.createElement('button');
   const counter = document.createElement('span');
-  const buttonMinus = document.createElement('button');
+  const minusBut = document.createElement('button');
+  const plauOrMinusBox = document.createElement('div');
+  const plauOrMinusSign = document.createElement('span');
+  const plauOrMinusInput = document.createElement('input');
 
-  buttonRemove.classList.add('button', 'remover');
+
+  removeBut.classList.add('button', 'remover');
   item.classList.add('item');
-  buttonPlus.classList.add('button', 'plus');
+  plusBut.classList.add('button', 'plus');
   counter.classList.add('counter');
-  buttonMinus.classList.add('button', 'minus');
+  minusBut.classList.add('button', 'minus');
+  plauOrMinusBox.classList.add('box-plau-or-minus');
+  plauOrMinusSign.classList.add('plau-or-minus');
+  plauOrMinusInput.classList.add('plau-or-minus');
 
-  buttonRemove.append('x');
+
+  removeBut.append('x');
   item.append(value);
-  buttonPlus.append('+');
+  plusBut.append('+');
   counter.append(count);
-  buttonMinus.append('-');
+  minusBut.append('-');
 
-  li.append(buttonPlus, buttonMinus, item, buttonRemove, counter);
-
+  plauOrMinusInput.type = 'number';
   li.setAttribute('key', key)
 
-  listRef.appendChild(li);
+  plauOrMinusBox.append(plauOrMinusInput, plauOrMinusSign);
+  li.append(plusBut, minusBut, item, removeBut, plauOrMinusBox, counter)
+  itemsBoxRef.append(li);
   itemsRef.push(li);
 
-
-  // Remove on item
-  removeOneItem()
-
-  // Plus item
-  const buttonPlusRefS = li.querySelectorAll('ul li .plus')
-  buttonPlusRefS.forEach(but => {
-    but.addEventListener('click', e => {
-
-      const keyToPlus = e.target.parentElement.getAttribute('key');
-      items.forEach((item, i) => {
-        if (item.key == keyToPlus && item.count < 999) {
-          item.count += 1
-          document.querySelector(`li[key="${keyToPlus}"] span.counter`).innerHTML = item.count;
-          localStorage.setItem('items', JSON.stringify(items));
-        }
-      })
-
-    })
-  })
-
-  // Minus item
-  const buttonMinusRefS = li.querySelectorAll('ul li .minus')
-  buttonMinusRefS.forEach(but => {
-    but.addEventListener('click', e => {
-      const keyToMinus = e.target.parentElement.getAttribute('key');
-      console.log(keyToMinus)
-      items.forEach((item, i) => {
-        if (item.key == keyToMinus && item.count > 0) {
-          item.count -= 1
-          document.querySelector(`li[key="${keyToMinus}"] span.counter`).innerHTML = item.count;
-          localStorage.setItem('items', JSON.stringify(items));
-        }
-      })
-
-    })
-  })
-
-  // Clear all item
-  const buttonClearAllRef = document.querySelector('button.clear')
-
-  buttonClearAllRef.addEventListener('click', _ => {
-    const lisRef = listRef.querySelectorAll('li')
-    lisRef.forEach(ele => {
-      ele.remove();
-    })
-    localStorage.clear();
-    inputItemRef.focus();
-  })
-
+  // Update itemsRef in the loops 
+  updateItemRefInLoops();
 
 }
 
+// Add items if there are items stored in the local storage
+const conAddaddItemsFromLocalStorage = _ => {
+  if (data) {
+    for (let i = 0; i < data.length; i++) {
+      items.push(data[i])
+    }
 
-if (data) {
+    key = dataKey
 
-  for (let i = 0; i < data.length; i++) {
-    items.push(data[i])
+    items.forEach(item => {
+      const value = item.item;
+      const { key, count } = item
+      createElemantList(value, count, key);
+    })
+
+  } else {
+    key = 0
+    items = []
+    localStorage.setItem('key', key)
+
   }
-
-  key = dataKey
-
-  items.forEach(item => {
-    const value = item.item;
-    const { key, count } = item
-    addItems(value, count, key);
-  })
-
-} else {
-  key = 0
-  items = []
-  localStorage.setItem('key', key)
-
 }
 
-buttonAddItemRef.addEventListener('click', _ => {
-  const value = inputItemRef.value.trim();
+window.addEventListener('load', conAddaddItemsFromLocalStorage)
+
+
+// Add item to list
+const addItemToList = _ => {
+  const value = itemInputRef.value.trim();
   if (value != '') {
 
     if (value[0] == '$' && value[value.length - 1] == '$') {
@@ -131,46 +110,149 @@ buttonAddItemRef.addEventListener('click', _ => {
       words.forEach(word => {
         if (word != '') {
           items.push({ key, item: word, count: 0 })
-          addItems(word, 0, key);
+          createElemantList(word, 0, key);
           key++;
           localStorage.setItem('key', key)
         }
       })
-      localStorage.setItem('items', JSON.stringify(items))
+      updateDataInLocalStorage();
 
     } else {
       items.push({ key, item: value, count: 0 })
 
-      addItems(value, 0, key);
+      createElemantList(value, 0, key);
 
       key++;
       localStorage.setItem('key', key)
-      localStorage.setItem('items', JSON.stringify(items))
+      updateDataInLocalStorage();
     }
 
   }
 
-  inputItemRef.focus();
-  inputItemRef.value = '';
+  itemInputRef.focus();
+  itemInputRef.value = '';
 
-})
+}
 
+const addButRef = document.querySelector('.add-item-box button');
+addButRef.addEventListener('click', addItemToList);
+
+// Remove one item 
 const removeOneItem = _ => {
   itemsRef.forEach(li => {
-    const removeButRef = li.querySelectorAll('ul li .remover')
-    removeButRef.addEventListener('click', e => {
+    const removeButRef = li.querySelector('button.remover');
+    removeButRef.onclick = _ => {
       removeButRef.parentElement.remove();
-      const keyToRemove = removeButRef.parentElement.getAttribute('key');
-
+      const itemKey = removeButRef.parentElement.getAttribute('key');
       items.forEach((item, i) => {
-        if (item.key == keyToRemove) {
+        if (item.key == itemKey) {
           items.splice(i, 1);
         }
       })
 
-      localStorage.setItem('items', JSON.stringify(items));
-    })
+      updateDataInLocalStorage();
+    }
+  })
+}
+
+// Clear all items 
+const clearAllItems = _ => {
+  itemsBoxRef.innerHTML = '';
+  localStorage.clear();
+  itemInputRef.focus();
+}
+
+const clearAllItemsButRef = document.querySelector('button.clear');
+clearAllItemsButRef.addEventListener('click', clearAllItems);
+
+// Plus on counter
+const plusOnCounter = _ => {
+  itemsRef.forEach(li => {
+    const plusButRef = li.querySelector('button.plus');
+    plusButRef.onclick = _ => {
+      const itemKey = plusButRef.parentElement.getAttribute('key');
+      items.forEach((item, i) => {
+        if (item.key == itemKey && item.count < 999) {
+          item.count += 1
+          const itemCounterRef = li.querySelector('span.counter');
+          itemCounterRef.innerHTML = item.count;
+          updateDataInLocalStorage();
+        }
+      })
+    }
+  })
+}
+
+// Plus on counter by input
+const plusOnCounterByInput = _ => {
+  let holdTouchTimeout;
+  itemsRef.forEach(li => {
+    const plusButRef = li.querySelector('button.plus');
+    plusButRef.ontouchstart = _ => {
+      holdTouchTimeout = setTimeout(_ => {
+        const plauOrMinusBoxRef = li.querySelector('div.box-plau-or-minus');
+        const plauOrMinusInputRef = plauOrMinusBoxRef.querySelector('input.plau-or-minus');
+        const plauOrMinusBoxShow = plauOrMinusBoxRef.dataset.show == 'true' ? true : false;
+        const plauOrMinusBoxPlusSgin = plauOrMinusBoxRef.dataset.plus == 'true' ? true : false;
+        if (plauOrMinusBoxShow && !plauOrMinusBoxPlusSgin) {
+          plauOrMinusBoxRef.dataset.plus = !plauOrMinusBoxPlusSgin;
+          plauOrMinusInputRef.focus()
+        } else if (!plauOrMinusBoxShow) {
+          plauOrMinusBoxRef.dataset.show = !plauOrMinusBoxShow;
+          plauOrMinusBoxRef.dataset.plus = !plauOrMinusBoxPlusSgin;
+          plauOrMinusInputRef.focus()
+        } else if (plauOrMinusBoxShow, plauOrMinusBoxPlusSgin) {
+          plauOrMinusBoxRef.dataset.show = !plauOrMinusBoxShow;
+          plauOrMinusBoxRef.dataset.plus = !plauOrMinusBoxPlusSgin;
+        }
+      }, holdTouchDeily)
+    }
+    plusButRef.ontouchend = _ => clearTimeout(holdTouchTimeout);
   })
 }
 
 
+// Minus on counter
+const minusOnCounter = _ => {
+  itemsRef.forEach(li => {
+    const minusButRef = li.querySelector('button.minus');
+    minusButRef.onclick = _ => {
+      const itemKey = minusButRef.parentElement.getAttribute('key');
+      items.forEach((item, i) => {
+        if (item.key == itemKey && item.count > 0) {
+          item.count -= 1
+          const itemCounterRef = li.querySelector('span.counter');
+          itemCounterRef.innerHTML = item.count;
+          updateDataInLocalStorage();
+        }
+      })
+    }
+  })
+}
+
+// Minus on counter by input
+const minusOnCounterByInput = _ => {
+  let holdTouchTimeout;
+  itemsRef.forEach(li => {
+    const minusButRef = li.querySelector('button.minus');
+    minusButRef.ontouchstart = _ => {
+      holdTouchTimeout = setTimeout(_ => {
+        const plauOrMinusBoxRef = li.querySelector('div.box-plau-or-minus');
+        const plauOrMinusInputRef = plauOrMinusBoxRef.querySelector('input.plau-or-minus');
+        const plauOrMinusBoxShow = plauOrMinusBoxRef.dataset.show == 'true' ? true : false;
+        const plauOrMinusBoxPlusSgin = plauOrMinusBoxRef.dataset.plus == 'true' ? true : false;
+        if (plauOrMinusBoxShow && plauOrMinusBoxPlusSgin) {
+          plauOrMinusBoxRef.dataset.plus = !plauOrMinusBoxPlusSgin;
+          plauOrMinusInputRef.focus();
+        } else if (plauOrMinusBoxShow && !plauOrMinusBoxPlusSgin) {
+          plauOrMinusBoxRef.dataset.show = !plauOrMinusBoxShow;
+          
+        }else if (!plauOrMinusBoxShow && !plauOrMinusBoxPlusSgin) {
+          plauOrMinusBoxRef.dataset.show = !plauOrMinusBoxShow;
+          plauOrMinusInputRef.focus();
+        }
+      }, holdTouchDeily)
+    }
+    minusButRef.ontouchend = _ => clearTimeout(holdTouchTimeout);
+  })
+}

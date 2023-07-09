@@ -30,25 +30,13 @@ body {
   font-size: 20px;
   margin: 0;
   padding: 10px;
-  transition: 1s ease;
+  transition: .6s ease;
   font-family: 'Cairo', sans-serif;
 }
 
 .button:active {
   background-color: #0077FF;
   color: #ffffff;
-}
-
-@keyframes buttonAin {
-  from {
-    background-color: #0077FF;
-    color: #ffffff;
-  }
-
-  to {
-    background-color: #3333330d;
-    color: #9098A9;
-  }
 }
 
 .add-item-box {
@@ -212,7 +200,7 @@ ul li span.plau-or-minus::before {
   opacity: 0;
 }
 
-ul li span.plau-or-minus[plus="true"]::before {
+ul li div.box-plau-or-minus[data-plus="true"] span.plau-or-minus::before {
   opacity: 1
 }
 
