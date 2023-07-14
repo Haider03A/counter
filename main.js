@@ -14,9 +14,10 @@ const updateDataInLocalStorage = _ => localStorage.setItem('items', JSON.stringi
 const updateItemRefInLoops = _ => {
   removeOneItem();
   plusOnCounter();
-  plusOnCounterByInput();
   minusOnCounter();
-  minusOnCounterByInput();
+  pludBoxInputShowAndHidden();
+  minusBoxInputShowAndHidden();
+  plusOrMinusOnCounterByInput()
 }
 
 const itemsBoxRef = document.querySelector('ul.list');
@@ -87,8 +88,6 @@ const conAddaddItemsFromLocalStorage = _ => {
 }
 
 window.addEventListener('load', conAddaddItemsFromLocalStorage)
-
-
 // Add item to list
 const addItemToList = _ => {
   const value = itemInputRef.value.trim();
@@ -172,7 +171,7 @@ const plusOnCounter = _ => {
     plusButRef.onclick = _ => {
       const itemKey = plusButRef.parentElement.getAttribute('key');
       items.forEach((item, i) => {
-        if (item.key == itemKey && item.count < 999) {
+        if (item.key == itemKey && item.count < 8000) {
           item.count += 1
           const itemCounterRef = li.querySelector('span.counter');
           itemCounterRef.innerHTML = item.count;
@@ -182,35 +181,6 @@ const plusOnCounter = _ => {
     }
   })
 }
-
-// Plus on counter by input
-const plusOnCounterByInput = _ => {
-  let holdTouchTimeout;
-  itemsRef.forEach(li => {
-    const plusButRef = li.querySelector('button.plus');
-    plusButRef.ontouchstart = _ => {
-      holdTouchTimeout = setTimeout(_ => {
-        const plauOrMinusBoxRef = li.querySelector('div.box-plau-or-minus');
-        const plauOrMinusInputRef = plauOrMinusBoxRef.querySelector('input.plau-or-minus');
-        const plauOrMinusBoxShow = plauOrMinusBoxRef.dataset.show == 'true' ? true : false;
-        const plauOrMinusBoxPlusSgin = plauOrMinusBoxRef.dataset.plus == 'true' ? true : false;
-        if (plauOrMinusBoxShow && !plauOrMinusBoxPlusSgin) {
-          plauOrMinusBoxRef.dataset.plus = !plauOrMinusBoxPlusSgin;
-          plauOrMinusInputRef.focus()
-        } else if (!plauOrMinusBoxShow) {
-          plauOrMinusBoxRef.dataset.show = !plauOrMinusBoxShow;
-          plauOrMinusBoxRef.dataset.plus = !plauOrMinusBoxPlusSgin;
-          plauOrMinusInputRef.focus()
-        } else if (plauOrMinusBoxShow, plauOrMinusBoxPlusSgin) {
-          plauOrMinusBoxRef.dataset.show = !plauOrMinusBoxShow;
-          plauOrMinusBoxRef.dataset.plus = !plauOrMinusBoxPlusSgin;
-        }
-      }, holdTouchDeily)
-    }
-    plusButRef.ontouchend = _ => clearTimeout(holdTouchTimeout);
-  })
-}
-
 
 // Minus on counter
 const minusOnCounter = _ => {
@@ -230,15 +200,47 @@ const minusOnCounter = _ => {
   })
 }
 
-// Minus on counter by input
-const minusOnCounterByInput = _ => {
+// Plus box input show and hidden
+const pludBoxInputShowAndHidden = _ => {
+  let holdTouchTimeout;
+  itemsRef.forEach(li => {
+    const plusButRef = li.querySelector('button.plus');
+    const plauOrMinusBoxRef = li.querySelector('div.box-plau-or-minus');
+    const plauOrMinusInputRef = plauOrMinusBoxRef.querySelector('input.plau-or-minus');
+
+    plusButRef.ontouchstart = _ => {
+      holdTouchTimeout = setTimeout(_ => {
+        const plauOrMinusBoxShow = plauOrMinusBoxRef.dataset.show == 'true' ? true : false;
+        const plauOrMinusBoxPlusSgin = plauOrMinusBoxRef.dataset.plus == 'true' ? true : false;
+
+        if (plauOrMinusBoxShow && !plauOrMinusBoxPlusSgin) {
+          plauOrMinusBoxRef.dataset.plus = !plauOrMinusBoxPlusSgin;
+          plauOrMinusInputRef.focus()
+        } else if (!plauOrMinusBoxShow) {
+          plauOrMinusBoxRef.dataset.show = !plauOrMinusBoxShow;
+          plauOrMinusBoxRef.dataset.plus = !plauOrMinusBoxPlusSgin;
+          plauOrMinusInputRef.focus()
+        } else if (plauOrMinusBoxShow, plauOrMinusBoxPlusSgin) {
+          plauOrMinusBoxRef.dataset.show = !plauOrMinusBoxShow;
+          plauOrMinusBoxRef.dataset.plus = !plauOrMinusBoxPlusSgin;
+          plauOrMinusInputRef.value = '';
+        }
+
+      }, holdTouchDeily)
+    }
+    plusButRef.ontouchend = _ => clearTimeout(holdTouchTimeout);
+  })
+}
+
+// Minus box input show and hidden
+const minusBoxInputShowAndHidden = _ => {
   let holdTouchTimeout;
   itemsRef.forEach(li => {
     const minusButRef = li.querySelector('button.minus');
+    const plauOrMinusBoxRef = li.querySelector('div.box-plau-or-minus');
+    const plauOrMinusInputRef = plauOrMinusBoxRef.querySelector('input.plau-or-minus');
     minusButRef.ontouchstart = _ => {
       holdTouchTimeout = setTimeout(_ => {
-        const plauOrMinusBoxRef = li.querySelector('div.box-plau-or-minus');
-        const plauOrMinusInputRef = plauOrMinusBoxRef.querySelector('input.plau-or-minus');
         const plauOrMinusBoxShow = plauOrMinusBoxRef.dataset.show == 'true' ? true : false;
         const plauOrMinusBoxPlusSgin = plauOrMinusBoxRef.dataset.plus == 'true' ? true : false;
         if (plauOrMinusBoxShow && plauOrMinusBoxPlusSgin) {
@@ -246,13 +248,53 @@ const minusOnCounterByInput = _ => {
           plauOrMinusInputRef.focus();
         } else if (plauOrMinusBoxShow && !plauOrMinusBoxPlusSgin) {
           plauOrMinusBoxRef.dataset.show = !plauOrMinusBoxShow;
-          
-        }else if (!plauOrMinusBoxShow && !plauOrMinusBoxPlusSgin) {
+        } else if (!plauOrMinusBoxShow && !plauOrMinusBoxPlusSgin) {
           plauOrMinusBoxRef.dataset.show = !plauOrMinusBoxShow;
           plauOrMinusInputRef.focus();
+          plauOrMinusInputRef.value = '';
         }
       }, holdTouchDeily)
     }
     minusButRef.ontouchend = _ => clearTimeout(holdTouchTimeout);
   })
 }
+
+const plusOrMinusOnCounterByInput = _ => {
+  itemsRef.forEach(li => {
+    const plauOrMinusBoxRef = li.querySelector('div.box-plau-or-minus');
+    const itemCounterRef = li.querySelector('span.counter');
+    const plauOrMinusInputRef = li.querySelector('div.box-plau-or-minus input.plau-or-minus');
+    const itemKey = li.getAttribute('key');
+    plauOrMinusInputRef.onkeypress = e => {
+      const plusOrMinusInputValue = Number(plauOrMinusInputRef.value);
+      const itemCounterTextContent = Number(itemCounterRef.textContent);
+      const inputValuePlusItemCounter = plusOrMinusInputValue + itemCounterTextContent;
+      const inputValueMinusItemCounter = itemCounterTextContent - plusOrMinusInputValue;
+      const plauOrMinusBoxShow = plauOrMinusBoxRef.dataset.show == 'true' ? true : false;
+      const plauOrMinusBoxPlusSgin = plauOrMinusBoxRef.dataset.plus == 'true' ? true : false;
+      if (e.key == 'Enter' && plusOrMinusInputValue > 0 && plauOrMinusBoxShow) {
+        if (plauOrMinusBoxPlusSgin) {
+          (inputValuePlusItemCounter) <= 8000 && (inputValuePlusItemCounter).toString().length <= 5 ? itemCounterRef.textContent = inputValuePlusItemCounter : false;
+          plauOrMinusInputRef.value = ''
+          items.forEach((item, i) => {
+            if (item.key == itemKey && item.count <= 8000) {
+              item.count = Number(itemCounterRef.textContent);
+              updateDataInLocalStorage();
+            }
+          })
+          
+        } else {
+          (inputValueMinusItemCounter) >= 0  && (inputValueMinusItemCounter).toString().length <= 5 ? itemCounterRef.textContent = inputValueMinusItemCounter : false;
+          plauOrMinusInputRef.value = ''
+          items.forEach((item, i) => {
+            if (item.key == itemKey && item.count > 0.9) {
+              item.count = Number(itemCounterRef.textContent);
+              updateDataInLocalStorage();
+            }
+          })
+        }
+      }
+    }
+  })
+}
+

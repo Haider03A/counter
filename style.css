@@ -141,7 +141,7 @@ ul li input.plau-or-minus {
   transition: .3s;
   height: 50px;
   min-width: 40px;
-  max-width: 40px;
+  max-width: 50px;
   display: flex;
   justify-content: center;
   align-items: center;
